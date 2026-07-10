@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Estoque Link Store</title>
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0D11" media="(prefers-color-scheme: dark)">
+</head>
+<body>
+<style>
+  :root{
+    --bg:#FFFFFF; --panel:#FFFFFF; --soft:#F6F7F9;
+    --ink:#0F1115; --muted:#6A7180; --faint:#A2A8B4;
+    --line:#EDEFF3; --line-2:#E1E4EA;
+    --active:#111318; --on-active:#FFFFFF;
+    --novo:#159A63; --semi:#C0821F;
+    --shadow:0 1px 2px rgba(15,17,21,.05);
+    --shadow-h:0 6px 22px rgba(15,17,21,.09);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0B0D11; --panel:#12151B; --soft:#171B22; --ink:#EDEFF3; --muted:#98A0AE; --faint:#666E7C;
+      --line:#20242C; --line-2:#2B303B; --active:#EDEFF3; --on-active:#0B0D11; --novo:#35C88A; --semi:#E0A64B;
+      --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-h:0 8px 26px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#FFFFFF;--panel:#FFFFFF;--soft:#F6F7F9;--ink:#0F1115;--muted:#6A7180;--faint:#A2A8B4;--line:#EDEFF3;--line-2:#E1E4EA;--active:#111318;--on-active:#FFFFFF;--novo:#159A63;--semi:#C0821F;--shadow:0 1px 2px rgba(15,17,21,.05);--shadow-h:0 6px 22px rgba(15,17,21,.09);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0B0D11;--panel:#12151B;--soft:#171B22;--ink:#EDEFF3;--muted:#98A0AE;--faint:#666E7C;--line:#20242C;--line-2:#2B303B;--active:#EDEFF3;--on-active:#0B0D11;--novo:#35C88A;--semi:#E0A64B;--shadow:0 1px 2px rgba(0,0,0,.4);--shadow-h:0 8px 26px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.45;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px 80px}
+
+  header{padding:34px 0 0}
+  .word{font-size:15px;font-weight:600;letter-spacing:.02em;color:var(--ink)}
+  .word b{font-weight:750}
+  h1{margin:22px 0 6px;font-size:30px;font-weight:730;letter-spacing:-.03em;line-height:1.05}
+  .sub{font-size:14.5px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--novo);display:inline-block}
+
+  .bar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(180%) blur(12px);
+    margin:26px -20px 0;padding:12px 20px;border-bottom:1px solid var(--line)}
+  .bar-in{display:flex;gap:10px;flex-wrap:wrap;align-items:center;max-width:1040px;margin:0 auto}
+  .search{flex:1 1 220px;display:flex;align-items:center;gap:10px;background:var(--soft);border:1px solid var(--line);
+    border-radius:12px;padding:0 13px;height:44px}
+  .search svg{width:17px;height:17px;color:var(--faint);flex:none}
+  .search input{border:0;outline:0;background:transparent;color:var(--ink);font-size:15px;width:100%;font-family:inherit}
+  .search input::placeholder{color:var(--faint)}
+  .chips{display:flex;gap:6px}
+  .chip{font:inherit;font-size:14px;font-weight:560;cursor:pointer;height:44px;padding:0 15px;border-radius:12px;
+    border:1px solid var(--line-2);background:var(--panel);color:var(--muted);display:flex;align-items:center;gap:7px;transition:.15s}
+  .chip:hover{color:var(--ink)}
+  .chip[aria-pressed="true"]{background:var(--active);border-color:var(--active);color:var(--on-active)}
+  .chip .n{font-size:12px;font-variant-numeric:tabular-nums;opacity:.55}
+  .chip:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+  .sec{display:flex;align-items:center;gap:14px;margin:38px 2px 16px}
+  .sec .t{font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+  .sec .rule{flex:1;height:1px;background:var(--line)}
+  .sec .ct{font-size:12.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;gap:16px;transition:box-shadow .16s,transform .16s,border-color .16s}
+  .card:hover{box-shadow:var(--shadow-h);transform:translateY(-2px);border-color:var(--line-2)}
+  .eyebrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .cat{font-size:11px;font-weight:650;letter-spacing:.11em;text-transform:uppercase;color:var(--faint)}
+  .state{font-size:11.5px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .state .sd{width:6px;height:6px;border-radius:50%}
+  .state.novo .sd{background:var(--novo)} .state.semi .sd{background:var(--semi)}
+  .name{font-size:17px;font-weight:620;letter-spacing:-.015em;line-height:1.25;margin-top:9px;text-wrap:balance}
+  .det{font-size:13px;color:var(--muted);margin-top:5px}
+  .prices{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+  .pix .lbl{font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--faint);text-transform:uppercase}
+  .pix .v{font-size:25px;font-weight:730;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:3px;line-height:1}
+  .parc{text-align:right;font-variant-numeric:tabular-nums;display:flex;flex-direction:column;gap:4px}
+  .parc .row{font-size:13px;color:var(--muted)}
+  .parc .row b{color:var(--ink);font-weight:600}
+  .parc .row .x{color:var(--faint);font-size:11px;margin-right:3px}
+
+  .empty{text-align:center;color:var(--muted);padding:70px 20px;font-size:15.5px}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);color:var(--faint);font-size:12.5px;text-align:center;line-height:1.85}
+
+  @media (max-width:520px){
+    .grid{grid-template-columns:1fr}
+    h1{font-size:26px}
+    .chips{width:100%}
+    .chip{flex:1;justify-content:center;padding:0 8px}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="word"><b>Link</b> Store</div>
+    <h1>Estoque de aparelhos</h1>
+    <div class="sub"><span class="dot"></span> Preços de venda &middot; atualizado 9 jul 2026</div>
+  </header>
+
+  <div class="bar">
+    <div class="bar-in">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.2-3.2"></path></svg>
+        <input id="q" type="search" placeholder="Buscar modelo ou cor…" autocomplete="off" aria-label="Buscar produto">
+      </label>
+      <div class="chips" role="group" aria-label="Filtrar">
+        <button class="chip" data-f="todos" aria-pressed="true">Todos <span class="n" id="c-todos"></span></button>
+        <button class="chip" data-f="novo" aria-pressed="false">Novos <span class="n" id="c-novo"></span></button>
+        <button class="chip" data-f="seminovo" aria-pressed="false">Seminovos <span class="n" id="c-semi"></span></button>
+      </div>
+    </div>
+  </div>
+
+  <main id="app"></main>
+  <footer>
+    Painel interno &middot; uso da equipe &middot; valores de venda (PIX, 12x e 18x)<br>
+    Novos = lacrados com garantia Apple &middot; Seminovos = 90 dias de garantia
+  </footer>
+</div>
+
+<script>
+const DADOS = [
+  {m:"iPhone 17 Pro Max 512GB", d:"Silver", e:"novo", pix:9700},
+  {m:"iPhone 17 Pro Max 512GB", d:"Laranja", e:"novo", pix:9480},
+  {m:"MacBook Air M4 13” 256GB/16GB", d:"Midnight, Starlight, Sky Blue", e:"novo", pix:8450},
+  {m:"iPhone 17 Pro Max 256GB", d:"Silver", e:"novo", pix:8250},
+  {m:"iPhone 17 Pro Max 256GB", d:"Laranja, Azul", e:"novo", pix:8150},
+  {m:"MacBook NEO 8GB/512GB", d:"Rosa", e:"novo", pix:6650},
+  {m:"iPhone 17 Air 256GB", d:"Light Gold", e:"novo", pix:6650},
+  {m:"Apple Watch SE 3 44mm", d:"Midnight", e:"novo", pix:2770},
+  {m:"Apple Watch SE 3 40mm", d:"Starlight", e:"novo", pix:2500},
+  {m:"Apple Watch SE 2 44mm", d:"Midnight", e:"novo", pix:2260},
+  {m:"Magic Mouse USB-C", d:"Black", e:"novo", pix:1120},
+  {m:"Apple Pencil USB-C", d:"—", e:"novo", pix:1120},
+  {m:"AirTag (pack com 4)", d:"—", e:"novo", pix:1000},
+  {m:"iPhone 16 Pro Max 256GB", d:"desert, branco, preto", e:"seminovo", pix:5799},
+  {m:"iPhone 16 Pro 256GB", d:"preto, natural", e:"seminovo", pix:5349},
+  {m:"iPhone 17 256GB", d:"azul · garantia Apple", e:"seminovo", pix:5299},
+  {m:"iPhone 16 Pro 128GB", d:"desert", e:"seminovo", pix:5149},
+  {m:"iPhone 15 Pro Max 256GB", d:"preto, azul", e:"seminovo", pix:4799},
+  {m:"iPhone 16 128GB", d:"preto, pink, verde", e:"seminovo", pix:4349},
+  {m:"iPhone 15 Pro 256GB", d:"preto", e:"seminovo", pix:4299},
+  {m:"iPhone 15 Pro 128GB", d:"natural", e:"seminovo", pix:4099},
+  {m:"iPhone 14 Pro Max 128GB", d:"roxo", e:"seminovo", pix:3949},
+  {m:"iPhone 14 Pro 256GB", d:"roxo, preto", e:"seminovo", pix:3699},
+  {m:"iPhone 15 Plus 128GB", d:"preto", e:"seminovo", pix:3599},
+  {m:"Apple Watch Ultra 2", d:"cabo + pulseira · bateria 100%", e:"seminovo", pix:3599},
+  {m:"iPhone 15 128GB", d:"azul, verde, pink", e:"seminovo", pix:3449},
+  {m:"iPhone 16e 128GB", d:"preto", e:"seminovo", pix:3349},
+  {m:"iPhone 14 128GB", d:"lilás, preto · bateria 100%", e:"seminovo", pix:2949},
+  {m:"iPhone 14 128GB", d:"preto", e:"seminovo", pix:2899},
+  {m:"iPhone 14 128GB", d:"azul, lilás · bateria 80%", e:"seminovo", pix:2699},
+];
+const brl=(v,dec)=>"R$ "+Number(v).toLocaleString("pt-BR",{minimumFractionDigits:dec?2:0,maximumFractionDigits:dec?2:0});
+const x12=p=>(p*1.14)/12, x18=p=>(p*1.18)/18;
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const categoria=m=>/iphone/i.test(m)?"iPhone":/watch/i.test(m)?"Apple Watch":/macbook/i.test(m)?"MacBook":"Acessório";
+let filtro="todos", termo="";
+const app=document.getElementById("app");
+function card(it){
+  const cls=it.e==="novo"?"novo":"semi", rot=it.e==="novo"?"Novo":"Seminovo";
+  return `<article class="card">
+    <div>
+      <div class="eyebrow"><span class="cat">${categoria(it.m)}</span><span class="state ${cls}"><span class="sd"></span>${rot}</span></div>
+      <div class="name">${it.m}</div>
+      <div class="det">${it.d}</div>
+    </div>
+    <div class="prices">
+      <div class="pix"><div class="lbl">PIX à vista</div><div class="v">${brl(it.pix,0)}</div></div>
+      <div class="parc">
+        <div class="row"><span class="x">12x</span><b>${brl(x12(it.pix),1)}</b></div>
+        <div class="row"><span class="x">18x</span><b>${brl(x18(it.pix),1)}</b></div>
+      </div>
+    </div>
+  </article>`;
+}
+function render(){
+  const t=norm(termo.trim());
+  const match=it=>(filtro==="todos"||it.e===filtro)&&(!t||norm(it.m+" "+it.d).includes(t));
+  const nov=DADOS.filter(it=>it.e==="novo"&&match(it));
+  const sem=DADOS.filter(it=>it.e==="seminovo"&&match(it));
+  let h="";
+  if(nov.length) h+=`<div class="sec"><span class="t">Novos · lacrados</span><span class="rule"></span><span class="ct">${nov.length}</span></div><div class="grid">${nov.map(card).join("")}</div>`;
+  if(sem.length) h+=`<div class="sec"><span class="t">Seminovos</span><span class="rule"></span><span class="ct">${sem.length}</span></div><div class="grid">${sem.map(card).join("")}</div>`;
+  if(!nov.length&&!sem.length) h=`<div class="empty">Nada encontrado pra "<b>${termo}</b>". Tenta outro modelo ou cor.</div>`;
+  app.innerHTML=h;
+}
+document.getElementById("c-todos").textContent=DADOS.length;
+document.getElementById("c-novo").textContent=DADOS.filter(d=>d.e==="novo").length;
+document.getElementById("c-semi").textContent=DADOS.filter(d=>d.e==="seminovo").length;
+document.getElementById("q").addEventListener("input",e=>{termo=e.target.value;render();});
+document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
+  filtro=c.dataset.f;
+  document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===c?"true":"false"));
+  render();
+}));
+render();
+</script>
+</body></html>
