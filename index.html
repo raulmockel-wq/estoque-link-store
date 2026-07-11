@@ -116,7 +116,7 @@
   <main id="app"></main>
   <footer>
     Painel interno · uso da equipe · valores de venda (PIX, 12x e 18x)<br>
-    Novos = lacrados, 1 ano de garantia · Seminovos = 30 dias de garantia (podem apresentar marcas de uso, nada grave)
+    Novos = lacrados, garantia Apple de 1 ano · Seminovos = 3 meses de garantia (podem apresentar marcas de uso)
   </footer>
 </div>
 
@@ -196,8 +196,8 @@ function render(){
   const t=norm(termo.trim());
   const match=it=>(filtro==="todos"||it.e===filtro)&&(!t||norm(it.m+" "+it.d).includes(t));
   let h="";
-  if(filtro!=="seminovo") h+=bloco("novo","Novos",match,`<b>Garantia de 1 ano.</b> Aparelhos lacrados.`);
-  if(filtro!=="novo") h+=bloco("seminovo","Seminovos",match,`<b>Garantia de 30 dias.</b> Pode apresentar marcas de uso, mas nada grave.`);
+  if(filtro!=="seminovo") h+=bloco("novo","Novos",match,`<b>Garantia Apple de 1 ano.</b> Aparelhos lacrados.`);
+  if(filtro!=="novo") h+=bloco("seminovo","Seminovos",match,`<b>Garantia de 3 meses.</b> Atenção: aparelhos podem apresentar marcas de uso.`);
   if(!h) h=`<div class="empty">Nada encontrado pra "<b>${termo}</b>". Tenta outro modelo ou cor.</div>`;
   app.innerHTML=h;
 }
