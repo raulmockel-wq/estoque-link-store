@@ -64,6 +64,11 @@
   .subcat .ci svg{width:15px;height:15px}
   .subcat .n{color:var(--faint);font-weight:500;font-size:12.5px}
 
+  .secnote{margin:1px 4px 16px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.4}
+  .secnote::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--novo);flex:none}
+  .secnote.seminovo::before{background:var(--semi)}
+  .secnote b{color:var(--ink);font-weight:660}
+
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px;transition:box-shadow .18s,transform .18s,border-color .18s}
   .card:hover{box-shadow:var(--shadow-h);transform:translateY(-2px);border-color:var(--line2)}
@@ -115,7 +120,7 @@
   <main id="app"></main>
   <footer>
     Painel interno · uso da equipe · valores de venda (PIX, 12x e 18x)<br>
-    Novos = lacrados com garantia Apple · Seminovos = 90 dias de garantia
+    Novos = lacrados, garantia Apple de 1 ano · Seminovos = 3 meses de garantia (podem apresentar marcas de uso)
   </footer>
 </div>
 
@@ -179,10 +184,11 @@ function card(it){
     </div>
   </article>`;
 }
-function bloco(estado, titulo, match){
+function bloco(estado, titulo, match, nota){
   const its=DADOS.filter(it=>it.e===estado && match(it));
   if(!its.length) return "";
   let h=`<div class="sec"><span class="t">${titulo}</span><span class="rule"></span><span class="ct">${its.length}</span></div>`;
+  if(nota) h+=`<div class="secnote ${estado}">${nota}</div>`;
   for(const [cat,label] of CATS){
     const arr=its.filter(it=>categoria(it.m)===cat);
     if(!arr.length) continue;
@@ -194,8 +200,8 @@ function render(){
   const t=norm(termo.trim());
   const match=it=>(filtro==="todos"||it.e===filtro)&&(!t||norm(it.m+" "+it.d).includes(t));
   let h="";
-  if(filtro!=="seminovo") h+=bloco("novo","Novos",match);
-  if(filtro!=="novo") h+=bloco("seminovo","Seminovos",match);
+  if(filtro!=="seminovo") h+=bloco("novo","Novos",match,`<b>Garantia Apple de 1 ano.</b> Aparelhos lacrados.`);
+  if(filtro!=="novo") h+=bloco("seminovo","Seminovos",match,`<b>Garantia de 3 meses.</b> Atenção: aparelhos podem apresentar marcas de uso.`);
   if(!h) h=`<div class="empty">Nada encontrado pra "<b>${termo}</b>". Tenta outro modelo ou cor.</div>`;
   app.innerHTML=h;
 }
