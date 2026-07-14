@@ -174,7 +174,7 @@ let filtro="todos", termo="";
 const app=document.getElementById("app");
 function card(it){
   return `<article class="card">
-    <div><div class="name">${it.m}</div><div class="det">${it.d}</div></div>
+    <div><div class="name">${it.m}</div>${it.d?`<div class="det">${it.d}</div>`:""}</div>
     <div class="prices">
       <div class="pix"><div class="lbl">PIX à vista</div><div class="v">${brl(it.pix,0)}</div></div>
       <div class="parc">
@@ -198,7 +198,7 @@ function bloco(estado, titulo, match, nota){
 }
 function render(){
   const t=norm(termo.trim());
-  const match=it=>(filtro==="todos"||it.e===filtro)&&(!t||norm(it.m+" "+it.d).includes(t));
+  const match=it=>(filtro==="todos"||it.e===filtro)&&(!t||norm(it.m+" "+(it.d||"")).includes(t));
   let h="";
   if(filtro!=="seminovo") h+=bloco("novo","Novos",match,`<b>Garantia Apple de 1 ano.</b> Aparelhos lacrados.`);
   if(filtro!=="novo") h+=bloco("seminovo","Seminovos",match,`<b>Garantia de 3 meses.</b> Atenção: aparelhos podem apresentar marcas de uso.`);
