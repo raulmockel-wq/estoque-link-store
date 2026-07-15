@@ -92,6 +92,18 @@
     .chip{flex:1;justify-content:center;padding:0 8px}
     .sec .t{font-size:19px}
   }
+
+  .card{position:relative}
+  .dot{position:absolute;top:14px;right:15px;width:7px;height:7px;border-radius:50%;opacity:.5}
+  .dot-a{background:#0a84ff}
+  .dot-b{background:var(--faint);opacity:.3}
+  .dot-c{background:transparent}
+  .dono{margin-top:2px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px dashed var(--line);padding-top:9px;font-size:12px;font-weight:600}
+  .dono .fn{color:var(--accent)}
+  .dono .cu{color:var(--muted)}
+  .dono .mg{color:var(--novo)}
+  body.modo-dono header .meta{cursor:default}
+  body.modo-dono header .meta::after{content:" 🔓";opacity:.55}
 </style>
 </head>
 <body>
@@ -173,7 +185,7 @@ const categoria=m=>/iphone/i.test(m)?"iPhone":/watch/i.test(m)?"Apple Watch":/ma
 let filtro="todos", termo="";
 const app=document.getElementById("app");
 function card(it){
-  return `<article class="card">
+  return `<article class="card"><span class="dot dot-${it.f||'c'}"></span>
     <div><div class="name">${it.m}</div>${it.d?`<div class="det">${it.d}</div>`:""}</div>
     <div class="prices">
       <div class="pix"><div class="lbl">PIX à vista</div><div class="v">${brl(it.pix,0)}</div></div>
@@ -181,7 +193,7 @@ function card(it){
         <div class="row"><span class="x">12x</span><b>${brl(x12(it.pix),1)}</b></div>
         <div class="row"><span class="x">18x</span><b>${brl(x18(it.pix),1)}</b></div>
       </div>
-    </div>
+    </div>${window.__DONO&&window.__DONO[it._i]?('<div class="dono"><span class="fn">'+window.__DONO[it._i].forn+'</span><span class="cu">custo '+brl(window.__DONO[it._i].c,0)+'</span><span class="mg">margem '+brl(window.__DONO[it._i].mg,0)+'</span></div>'):''}
   </article>`;
 }
 function bloco(estado, titulo, match, nota){
@@ -218,10 +230,28 @@ document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
   render();
 }));
 fetch("dados.json?v="+Date.now()).then(r=>r.json()).then(j=>{
-  DADOS = j.itens || [];
+  DADOS = (j.itens||[]).map((it,i)=>({...it,_i:i}));
   if(j.atualizado) document.getElementById("m-data").textContent=j.atualizado;
-  contadores(); render();
+  contadores(); render(); tentarDonoSalvo();
 }).catch(()=>{ app.innerHTML='<div class="empty">Nao consegui carregar o estoque agora. Puxa a pagina de novo.</div>'; });
+</script>
+
+<script>
+async function abrirDono(senha){
+  const r=await fetch("dono.enc?v="+Date.now()); if(!r.ok) throw new Error("sem arquivo");
+  const p=await r.json(); const dec=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+  const bk=await crypto.subtle.importKey("raw",new TextEncoder().encode(senha),"PBKDF2",false,["deriveKey"]);
+  const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:dec(p.salt),iterations:p.it,hash:"SHA-256"},bk,{name:"AES-GCM",length:256},false,["decrypt"]);
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:dec(p.iv)},key,dec(p.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+async function ativarDono(senha,salvar){ const arr=await abrirDono(senha); window.__DONO=arr; document.body.classList.add("modo-dono"); if(salvar){try{localStorage.setItem("lsd",senha);}catch(e){}} render(); }
+async function tentarDonoSalvo(){ let s=null; try{s=localStorage.getItem("lsd");}catch(e){} if(!s)return; try{await ativarDono(s,false);}catch(e){try{localStorage.removeItem("lsd");}catch(e2){}} }
+function sairDono(){ window.__DONO=null; document.body.classList.remove("modo-dono"); try{localStorage.removeItem("lsd");}catch(e){} render(); }
+(function(){ let n=0,t=0; const alvo=document.querySelector("header .meta")||document.querySelector("header"); if(!alvo)return;
+  alvo.addEventListener("click",async()=>{ const a=Date.now(); if(a-t>1200)n=0; t=a; n++;
+    if(window.__DONO){ if(n>=5){n=0; if(confirm("Sair do modo dono?"))sairDono();} return; }
+    if(n>=5){ n=0; const s=prompt("Senha do dono:"); if(!s)return; try{await ativarDono(s,true);}catch(e){alert("Senha incorreta.");} } }); })();
 </script>
 </body>
 </html>
