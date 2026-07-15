@@ -257,10 +257,13 @@ async function abrirDono(senha){
 async function ativarDono(senha,salvar){ const arr=await abrirDono(senha); window.__DONO=arr; document.body.classList.add("modo-dono"); if(salvar){try{localStorage.setItem("lsd",senha);}catch(e){}} render(); }
 async function tentarDonoSalvo(){ let s=null; try{s=localStorage.getItem("lsd");}catch(e){} if(!s)return; try{await ativarDono(s,false);}catch(e){try{localStorage.removeItem("lsd");}catch(e2){}} }
 function sairDono(){ window.__DONO=null; document.body.classList.remove("modo-dono"); try{localStorage.removeItem("lsd");}catch(e){} render(); }
-(function(){ let n=0,t=0; const alvo=document.querySelector("header .meta")||document.querySelector("header"); if(!alvo)return;
-  alvo.addEventListener("click",async()=>{ const a=Date.now(); if(a-t>1200)n=0; t=a; n++;
-    if(window.__DONO){ if(n>=5){n=0; if(confirm("Sair do modo dono?"))sairDono();} return; }
-    if(n>=5){ n=0; const s=prompt("Senha do dono:"); if(!s)return; try{await ativarDono(s,true);}catch(e){alert("Senha incorreta.");} } }); })();
+async function abrirCadeado(){ const s=prompt("Senha do dono (Raul):"); if(!s)return; try{ await ativarDono(s,true); alert("Modo dono ligado \u2713 agora voce ve custo e margem."); }catch(e){ alert("Senha incorreta. Tenta de novo."); } }
+(function(){ let n=0,t=0; const alvo=document.querySelector("header")||document.body;
+  alvo.addEventListener("click",async()=>{ const a=Date.now(); if(a-t>2000)n=0; t=a; n++;
+    if(window.__DONO){ if(n>=3){n=0; if(confirm("Sair do modo dono?"))sairDono();} return; }
+    if(n>=3){ n=0; abrirCadeado(); } });
+  if((location.hash||"").toLowerCase().includes("dono")){ setTimeout(()=>{ if(!window.__DONO) abrirCadeado(); }, 700); }
+})();
 </script>
 </body>
 </html>
