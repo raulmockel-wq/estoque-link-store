@@ -184,6 +184,15 @@ const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
 const categoria=m=>/iphone/i.test(m)?"iPhone":/watch/i.test(m)?"Apple Watch":/macbook/i.test(m)?"MacBook":/ipad/i.test(m)?"iPad":"Acessório";
 let filtro="todos", termo="";
 const app=document.getElementById("app");
+function pesoApple(it){
+  const m=it.m||"";
+  const gm=m.match(/(?:iphone|ipad)\s*(\d+)/i)||m.match(/\bM(\d)\b/i);
+  const g=gm?Number(gm[1]):0;
+  const t=/pro\s*max/i.test(m)?4:/pro/i.test(m)?3:/ultra/i.test(m)?3:/plus/i.test(m)?2:/air/i.test(m)?2:/\d+e\b/i.test(m)?0:1;
+  const cm=m.match(/(\d+)\s*(gb|tb)/i);
+  const c=cm?Number(cm[1])*(/tb/i.test(cm[2])?1024:1):0;
+  return {g,t,c};
+}
 function card(it){
   return `<article class="card"><span class="dot dot-${it.f||'c'}"></span>
     <div><div class="name">${it.m}</div>${it.d?`<div class="det">${it.d}</div>`:""}</div>
@@ -230,7 +239,7 @@ document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
   render();
 }));
 fetch("dados.json?v="+Date.now()).then(r=>r.json()).then(j=>{
-  DADOS = (j.itens||[]).map((it,i)=>({...it,_i:i}));
+  DADOS = (j.itens||[]).map((it,i)=>({...it,_i:i})); DADOS.sort((a,b)=>{const pa=pesoApple(a),pb=pesoApple(b);return pb.g-pa.g||pb.t-pa.t||pb.c-pa.c||b.pix-a.pix;});
   if(j.atualizado) document.getElementById("m-data").textContent=j.atualizado;
   contadores(); render(); tentarDonoSalvo();
 }).catch(()=>{ app.innerHTML='<div class="empty">Nao consegui carregar o estoque agora. Puxa a pagina de novo.</div>'; });
