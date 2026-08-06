@@ -1,0 +1,42 @@
+# Publica o painel de estoque da Link Store no GitHub Pages.
+# Dispara a cada vez que o Steve sobe um dados.json novo (push na main).
+# Substitui o build "legado" do Pages, que travava e deixava o painel congelado.
+name: Publicar painel de estoque
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Se chegarem duas listas seguidas, a publicacao mais nova cancela a anterior:
+# vale sempre o dado mais recente.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacao.outputs.page_url }}
+    steps:
+      - name: Baixar o repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar o Pages
+        uses: actions/configure-pages@v5
+
+      - name: Empacotar o site (arquivos estaticos, sem Jekyll)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Publicar
+        id: publicacao
+        uses: actions/deploy-pages@v4
