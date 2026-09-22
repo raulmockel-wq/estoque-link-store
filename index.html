@@ -185,15 +185,34 @@ const _seedIgnorar = [
 const IC={
   iPhone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="7" y="2.5" width="10" height="19" rx="2.6"/><path d="M10.5 5.2h3" stroke-linecap="round"/></svg>',
   "Apple Watch":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="6.5" y="6.5" width="11" height="11" rx="3"/><path d="M8.5 6.5l.6-3h5.8l.6 3M8.5 17.5l.6 3h5.8l.6-3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  MacBook:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4.5" y="5" width="15" height="10" rx="1.6"/><path d="M2.5 18.5h19" stroke-linecap="round"/></svg>',
+  Mac:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4.5" y="5" width="15" height="10" rx="1.6"/><path d="M2.5 18.5h19" stroke-linecap="round"/></svg>',
   iPad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="3" width="14" height="18" rx="2.4"/><path d="M11 18.5h2" stroke-linecap="round"/></svg>',
+  AirPods:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8.5 4C6.6 4 5.5 6 5.5 8.5S6.6 13 8.5 13s2.3-2 2.3-4.5S10.4 4 8.5 4zM15.5 4c1.9 0 3 2 3 4.5S17.4 13 15.5 13s-2.3-2-2.3-4.5S13.6 4 15.5 4z"/><path d="M8.7 13v6M15.3 13v6" stroke-linecap="round"/></svg>',
+  Games:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2.5" y="7.5" width="19" height="9" rx="4.5"/><path d="M6.8 10.8v3M5.3 12.3h3M15.6 11.4h.01M18 13.3h.01" stroke-linecap="round"/></svg>',
+  "Óculos VR":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2.5" y="8" width="19" height="9" rx="3"/><path d="M9 17c.7-1.7 4.3-1.7 5 0" stroke-linecap="round"/></svg>',
+  Drones:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="5" cy="6" r="2.2"/><circle cx="19" cy="6" r="2.2"/><rect x="9.5" y="10.5" width="5" height="4" rx="1"/><path d="M6.5 7.6 10 10.5M17.5 7.6 14 10.5M12 14.5v3M9.7 18.5h4.6" stroke-linecap="round"/></svg>',
+  "Câmeras":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="7" width="18" height="12" rx="2.4"/><circle cx="12" cy="13" r="3.2"/><path d="M8.5 7l1.2-2h4.6l1.2 2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  Xiaomi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="7" y="2.5" width="10" height="19" rx="2.6"/><path d="M10.5 5.2h3" stroke-linecap="round"/></svg>',
   "Acessório":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.4"/></svg>'
 };
-const CATS=[["iPhone","iPhones"],["MacBook","MacBooks"],["iPad","iPads"],["Apple Watch","Relógios"],["Acessório","Acessórios"]];
+const CATS=[["iPhone","iPhones"],["Mac","Macs"],["iPad","iPads"],["Apple Watch","Relógios"],["AirPods","AirPods"],["Games","Games"],["Óculos VR","Óculos VR"],["Drones","Drones"],["Câmeras","Câmeras"],["Xiaomi","Xiaomi"],["Acessório","Acessórios"]];
 const brl=(v,dec)=>"R$ "+Number(v).toLocaleString("pt-BR",{minimumFractionDigits:dec?2:0,maximumFractionDigits:dec?2:0});
 const x12=p=>(p*1.14)/12, x18=p=>(p*1.18)/18;
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
-const categoria=m=>/iphone/i.test(m)?"iPhone":/watch/i.test(m)?"Apple Watch":/macbook/i.test(m)?"MacBook":/ipad/i.test(m)?"iPad":"Acessório";
+const categoria=m=>{
+  if(/magic\s*keyboard|magic\s*mouse|apple\s*pencil|airtag|apple\s*tv|\bssd\b|carregador|adaptador|\bcabo/i.test(m)) return "Acessório";
+  if(/iphone/i.test(m)) return "iPhone";
+  if(/macbook|mac\s*mini/i.test(m)) return "Mac";
+  if(/ipad/i.test(m)) return "iPad";
+  if(/watch/i.test(m)) return "Apple Watch";
+  if(/airpods/i.test(m)) return "AirPods";
+  if(/nintendo|switch|playstation|xbox/i.test(m)) return "Games";
+  if(/quest|oculus|\bvr\b/i.test(m)) return "Óculos VR";
+  if(/osmo|gopro|c[aâ]mera/i.test(m)) return "Câmeras";
+  if(/drone|dji\s*(neo|mavic|mini|air|flip)/i.test(m)) return "Drones";
+  if(/xiaomi|redmi|poco|rob[oô]/i.test(m)) return "Xiaomi";
+  return "Acessório";
+};
 let filtro="todos", termo="";
 const app=document.getElementById("app");
 function pesoApple(it){
@@ -217,13 +236,20 @@ function card(it){
     </div>${window.__DONO&&window.__DONO[it._i]?('<div class="dono"><span class="fn">'+window.__DONO[it._i].forn+'</span><span class="cu">custo '+brl(window.__DONO[it._i].c,0)+'</span><span class="mg">margem '+brl(window.__DONO[it._i].mg,0)+'</span></div>'):''}
   </article>`;
 }
+function familia(m){return norm(m).split(/\s+/).slice(0,2).join(" ");}
+function ordenarPorFamilia(arr){
+  const g=new Map();
+  for(const it of arr){const k=familia(it.m);if(!g.has(k))g.set(k,[]);g.get(k).push(it);}
+  // familias na ordem do maior preco; dentro da familia mantem a ordem que ja veio (peso Apple/preco)
+  return [...g.values()].sort((A,B)=>Math.max(...B.map(x=>x.pix))-Math.max(...A.map(x=>x.pix))).flat();
+}
 function bloco(estado, titulo, match, nota){
   const its=DADOS.filter(it=>it.e===estado && match(it));
   if(!its.length) return "";
   let h=`<div class="sec"><span class="t">${titulo}</span><span class="rule"></span><span class="ct">${its.length}</span></div>`;
   if(nota) h+=`<div class="secnote ${estado}">${nota}</div>`;
   for(const [cat,label] of CATS){
-    const arr=its.filter(it=>categoria(it.m)===cat);
+    const arr=ordenarPorFamilia(its.filter(it=>categoria(it.m)===cat));
     if(!arr.length) continue;
     h+=`<div class="subcat"><span class="ci">${IC[cat]}</span>${label} <span class="n">· ${arr.length}</span></div><div class="grid">${arr.map(card).join("")}</div>`;
   }
@@ -250,7 +276,7 @@ document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
   document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===c?"true":"false"));
   render();
 }));
-fetch("dados.json?v="+Date.now()).then(r=>r.json()).then(j=>{
+(window.__PREVIEW?Promise.resolve(window.__PREVIEW):fetch("dados.json?v="+Date.now()).then(r=>r.json())).then(j=>{
   DADOS = (j.itens||[]).map((it,i)=>({...it,_i:i})); DADOS.sort((a,b)=>{const pa=pesoApple(a),pb=pesoApple(b);return pb.g-pa.g||pb.t-pa.t||pb.c-pa.c||b.pix-a.pix;});
   if(j.atualizado) document.getElementById("m-data").textContent=j.atualizado;
   contadores(); render(); tentarDonoSalvo();
