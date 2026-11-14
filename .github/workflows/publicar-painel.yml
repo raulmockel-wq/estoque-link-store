@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.publicacao.outputs.page_url }}
+      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url || steps.deploy3.outputs.page_url }}
     steps:
       - name: Baixar o repositorio
         uses: actions/checkout@v4
@@ -37,6 +37,29 @@ jobs:
         with:
           path: .
 
-      - name: Publicar
-        id: publicacao
+      # MOTOR DE TEIMOSIA: ate 3 tentativas de publicar.
+      # Se o GitHub engasgar (falha momentanea do Pages), espera e tenta de novo
+      # sozinho, sem mandar e-mail de erro. So desiste se falhar as 3 vezes.
+      - name: Publicar (1a tentativa)
+        id: deploy1
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Esperar 20s antes de tentar de novo
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 20
+
+      - name: Publicar (2a tentativa)
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Esperar 40s antes da ultima tentativa
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        run: sleep 40
+
+      - name: Publicar (3a e ultima tentativa)
+        id: deploy3
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
         uses: actions/deploy-pages@v4
